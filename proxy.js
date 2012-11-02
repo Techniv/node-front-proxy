@@ -1,8 +1,8 @@
-var logger = console;
-logger.log("");
+
 try{
 	require('colors');
-	var util		= require('util'),
+	var logger		= console,
+		util		= require('util'),
 		http		= require('http'),
 		path		= require('path'),
 		proxyLib	= require('http-proxy'),
@@ -13,6 +13,7 @@ try{
 	process.exit(1);
 }
 
+logger.log("");
 logger.log("=========================");
 logger.log("Starting NODE-FRONT-PROXY".green);
 logger.log("=========================");
