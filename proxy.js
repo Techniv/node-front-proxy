@@ -1,5 +1,5 @@
-
-console.log("");
+var logger = console;
+logger.log("");
 try{
 	require('colors');
 	var util		= require('util'),
@@ -8,47 +8,52 @@ try{
 		proxyLib	= require('http-proxy'),
 		cmdConf		= require('cmd-conf');
 } catch(err){
-	console.log("ERROR: Can't load required modules. Launch `npm install`.");
-	console.log(err.stack);
+	logger.log("ERROR: Can't load required modules. Launch `npm install`.");
+	logger.log(err.stack);
 	process.exit(1);
 }
 
-console.log("=========================");
-console.log("Starting NODE-FRONT-PROXY".green);
-console.log("=========================");
-console.log("");
+logger.log("=========================");
+logger.log("Starting NODE-FRONT-PROXY".green);
+logger.log("=========================");
+logger.log("");
 
-// Get Application path.
+// Get application path.
 var appPath = path.dirname(process.mainModule.filename)+'/';
+
 
 // Loading config with cmd-conf.
 try {
 	var config = cmdConf.getParameters();
 } catch(err){
-	console.log("Loading proxy config:"+" FAIL".red);
-	console.log(err.stack.yellow);
+	logger.log("Loading proxy config:"+" FAIL".red);
+	logger.log(err.stack.yellow);
 	process.exit(1);
 }
-console.log("Loading proxy config:"+" OK".green);
-console.log("Rule's file: "+config.ruleFile.yellow)
-console.log("Listen port: "+(""+config.listenPort).yellow)
-console.log("=========================");
-console.log("");
+logger.log("Loading proxy config:"+" OK".green);
+logger.log("Rule's file: "+config.ruleFile.yellow)
+logger.log("Listen port: "+(""+config.listenPort).yellow)
+logger.log("=========================");
+logger.log("");
+
+
 // Loading rules.
 try{
 	var rules = require(appPath+config.ruleFile);
 } catch (err){
-	console.log("Loading proxy rules:"+" FAIL".red);
-	console.log(err.stack.yellow);
+	logger.log("Loading proxy rules:"+" FAIL".red);
+	logger.log(err.stack.yellow);
 	process.exit(1);
 }
-console.log("Loading proxy rules:"+" OK".green);
+logger.log("Loading proxy rules:"+" OK".green);
 
 
-console.log("Applicable rules:".yellow);
+logger.log("Applicable rules:".yellow);
 for(var key in rules){
-	console.log(key.green+": "+util.inspect(rules[key]).yellow);
+	logger.log(key.green+": "+util.inspect(rules[key]).yellow);
 }
-console.log("=========================");
-console.log("");
+logger.log("=========================");
+logger.log("");
+
+
 
