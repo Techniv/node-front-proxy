@@ -57,4 +57,56 @@ logger.log("=========================");
 logger.log("");
 
 
+// Proxy method
+logger.log("Creating proxy server");
+var server = proxyLib.createServer(function(request, response, proxy){
+	var target;
+	var requestHost = request.headers.host;
+	if(typeof requestHost == "undefined"){
+		logger.error("Invalid request");
+		return;
+	}
+	if(rules[requestHost]){
+		target = rules[requestHost];
+		logger.info(requestHost.green
+			+": routed on "+(target.host+":"+target.port).yellow
+		);
+	} else{
+		target = rules["default"];
+		logger.info(requestHost.yellow
+			+": routed on "+(target.host+":"+target.port).yellow
+		);
+	}
+	
+	proxy.proxyRequest(request, response, target);	
+});
 
+// WebSocket
+server.on('upgrade',function(request, socket, head){
+	var target;
+	var requestHost = request.headers.host;
+	if(typeof requestHost == "undefined"){
+		logger.error("Invalid request");
+		return;
+	}
+	if(rules[requestHost]){
+		target = rules[requestHost];
+		logger.info(requestHost.green
+			+": routed on "+(target.host+":"+target.port).yellow
+			+" [sock]"
+		);
+	} else{
+		target = rules["default"];
+		logger.info(requestHost.yellow
+			+": routed on "+(target.host+":"+target.port).yellow
+			+" [sock]"
+		);
+	}
+	
+	var proxy = new proxyLib.HttpProxy({target:target});
+	proxy.proxyWebSocketRequest(request, socket, head);
+})
+
+// Launch server
+server.listen(config.listenPort);
+logger.log("Starting server on port"+config.listenPort+": "+"OK".green);
