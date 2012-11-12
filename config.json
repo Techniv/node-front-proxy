@@ -1,0 +1,16 @@
+{
+	"ruleFile":{
+		"key":			"rules",
+		"shortKey":		"r",
+		"action":		"get",
+		"number":		1,
+		"defaultValue":	"rules.js"
+	},
+	"listenPort":{
+		"key":			"port",
+		"shortKey":		"p",
+		"action":		"get",
+		"number":		1,
+		"defaultValue":	80
+	}
+}
