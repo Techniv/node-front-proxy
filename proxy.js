@@ -8,16 +8,16 @@ try{
 		proxyLib	= require('http-proxy'),
 		cmdConf		= require('cmd-conf');
 } catch(err){
-	logger.log("ERROR: Can't load required modules. Launch `npm install`.");
-	logger.log(err.stack);
+	console.log("ERROR: Can't load required modules. Launch `npm install`.");
+	console.log(err.stack);
 	process.exit(1);
 }
 
-logger.log("");
-logger.log("=========================");
-logger.log("Starting NODE-FRONT-PROXY".green);
-logger.log("=========================");
-logger.log("");
+console.log("");
+console.log("=========================");
+console.log("Starting NODE-FRONT-PROXY".green);
+console.log("=========================");
+console.log("");
 
 // Get application path.
 var appPath = path.dirname(process.mainModule.filename)+'/';
@@ -27,38 +27,38 @@ var appPath = path.dirname(process.mainModule.filename)+'/';
 try {
 	var config = cmdConf.getParameters();
 } catch(err){
-	logger.log("Loading proxy config:"+" FAIL".red);
-	logger.log(err.stack.yellow);
+	console.error("Loading proxy config:"+" FAIL".red);
+	console.error(err.stack.yellow);
 	process.exit(1);
 }
-logger.log("Loading proxy config:"+" OK".green);
-logger.log("Rule's file: "+config.ruleFile.yellow)
-logger.log("Listen port: "+(""+config.listenPort).yellow)
-logger.log("=========================");
-logger.log("");
+console.log("Loading proxy config:"+" OK".green);
+console.log("Rule's file: "+config.ruleFile.yellow)
+console.log("Listen port: "+(""+config.listenPort).yellow)
+console.log("=========================");
+console.log("");
 
 
 // Loading rules.
 try{
 	var rules = require(appPath+config.ruleFile);
 } catch (err){
-	logger.log("Loading proxy rules:"+" FAIL".red);
-	logger.log(err.stack.yellow);
+	console.error("Loading proxy rules:"+" FAIL".red);
+	console.error(err.stack.yellow);
 	process.exit(1);
 }
-logger.log("Loading proxy rules:"+" OK".green);
+console.log("Loading proxy rules:"+" OK".green);
 
 
-logger.log("Applicable rules:".yellow);
+console.log("Applicable rules:".yellow);
 for(var key in rules){
-	logger.log(key.green+": "+util.inspect(rules[key]).yellow);
+	console.log(key.green+": "+util.inspect(rules[key]).yellow);
 }
-logger.log("=========================");
-logger.log("");
+console.log("=========================");
+console.log("");
 
 
 // Proxy method
-logger.log("Creating proxy server");
+console.log("Creating proxy server");
 var server = proxyLib.createServer(function(request, response, proxy){
 	var target;
 	var requestHost = request.headers.host;
@@ -109,4 +109,4 @@ server.on('upgrade',function(request, socket, head){
 
 // Launch server
 server.listen(config.listenPort);
-logger.log("Starting server on port"+config.listenPort+": "+"OK".green);
+console.log("Starting server on port"+config.listenPort+": "+"OK".green);
