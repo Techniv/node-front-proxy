@@ -84,17 +84,40 @@ var server = proxyLib.createServer(function(request, response, proxy){
 	}
 	if(rules[requestHost]){
 		target = rules[requestHost];
-		logger.info(requestHost.green
-			+": routed on "+(target.host+":"+target.port).yellow
-		);
+		if(typeof target.plugin == 'string'){
+			var pluginPath = './plugins/'+target.plugin;
+			try{
+				logger.info(requestHost.green
+					+": routed by "+(target.plugin+" plugin").yellow
+				);
+				var plugin = require(pluginPath);
+				plugin(request, response, target, proxy);
+				return;
+			} catch (e){
+				logger.error("Error with routing plugin: "+ e.message);
+				logger.error(e.stack);
+				response.writeHead(502, {
+					"Status": "502 Bad Gateway",
+					"Content-Type": "text/plain"
+				});
+				response.write("Error 502 : Bad Gateway\n");
+				response.write("Error with routing plugin: "+ e.message +"\n");
+				response.end();
+				return;
+			}
+		} else {
+			logger.info(requestHost.green
+				+": routed on "+(target.host+":"+target.port).yellow
+			);
+		}
 	} else{
 		target = rules["default"];
 		logger.info(requestHost.yellow
 			+": routed on "+(target.host+":"+target.port).yellow
 		);
 	}
-	
-	proxy.proxyRequest(request, response, target);	
+
+	proxy.proxyRequest(request, response, target);
 });
 
 // WebSocket
