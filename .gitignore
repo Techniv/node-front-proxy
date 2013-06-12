@@ -16,6 +16,8 @@ npm-debug.log
 
 .settings
 .project
+.idea
 nbproject
 
 rules.js
+plugins
