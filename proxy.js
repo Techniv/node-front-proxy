@@ -56,7 +56,7 @@ console.log("");
 
 
 // Loading rules.
-rules = loadingRules();
+loadingRules();
 
 
 // Proxy method
@@ -143,7 +143,7 @@ console.log("Starting server on port"+config.listenPort+": "+"OK".green);
 function loadingRules(){
 	console.log("");
 
-	var rules, rulesId, rulesPath = appPath+config.ruleFile;
+	var rulesId, rulesPath = appPath+config.ruleFile;
 	rulesId = require.resolve(rulesPath);
 
 	if(require.cache[rulesId]) delete require.cache[rulesId];
