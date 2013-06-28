@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+var rules;
 try{
 	require('colors');
 	var logger		= console,
@@ -22,7 +22,8 @@ try{
 		http		= require('http'),
 		path		= require('path'),
 		proxyLib	= require('http-proxy'),
-		cmdConf		= require('cmd-conf');
+		cmdConf		= require('cmd-conf'),
+		commandio	= require('command.io');
 } catch(err){
 	console.log("ERROR: Can't load required modules. Launch `npm install`.");
 	console.log(err.stack);
@@ -55,22 +56,7 @@ console.log("");
 
 
 // Loading rules.
-try{
-	var rules = require(appPath+config.ruleFile);
-} catch (err){
-	console.error("Loading proxy rules:"+" FAIL".red);
-	console.error(err.stack.yellow);
-	process.exit(1);
-}
-console.log("Loading proxy rules:"+" OK".green);
-
-
-console.log("Applicable rules:".yellow);
-for(var key in rules){
-	console.log(key.green+": "+util.inspect(rules[key]).yellow);
-}
-console.log("=========================");
-console.log("");
+rules = loadingRules();
 
 
 // Proxy method
@@ -149,3 +135,35 @@ server.on('upgrade',function(request, socket, head){
 // Launch server
 server.listen(config.listenPort);
 console.log("Starting server on port"+config.listenPort+": "+"OK".green);
+
+
+/**
+ * Load the proxy rules.
+ */
+function loadingRules(){
+	console.log("");
+
+	var rules, rulesId, rulesPath = appPath+config.ruleFile;
+	rulesId = require.resolve(rulesPath);
+
+	if(require.cache[rulesId]) delete require.cache[rulesId];
+
+	try{
+		rules = require(rulesPath);
+	} catch (err){
+		console.error("Loading proxy rules:"+" FAIL".red);
+		console.error(err.stack.yellow);
+		process.exit(1);
+	}
+	console.log("Loading proxy rules:"+" OK".green);
+
+
+	console.log("Applicable rules:".yellow);
+	for(var key in rules){
+		console.log(key.green+": "+util.inspect(rules[key]).yellow);
+	}
+	console.log("=========================");
+	console.log("");
+}
+
+commandio.addCommand('reload', 'Reload the proxy rules from the file', loadingRules);

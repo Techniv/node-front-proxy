@@ -1,13 +1,14 @@
 {
 	"name": "node-front-proxy",
-	"version": "0.0.0",
+	"version": "1.0.0",
 	"author": "Vincent Peybernes [Techniv] <vpeybernes.pro@gmail.com>",
 	
 	"engines": {"node": ">= 0.8.x"},
 	
 	"dependencies":{
-		"http-proxy": ">= 0.8.x",
-		"cmd-conf":	">= 0.3.0",
-		"colors" : ">= 0.6.x"
+		"http-proxy":	">= 0.8.x",
+		"cmd-conf":		">= 0.3.0",
+		"colors" :		">= 0.6.x",
+		"command.io":	">= 0.1.x"
 	}
 }
