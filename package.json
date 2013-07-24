@@ -1,6 +1,6 @@
 {
 	"name": "node-front-proxy",
-	"version": "1.0.0",
+	"version": "1.2.0",
 	"author": "Vincent Peybernes [Techniv] <vpeybernes.pro@gmail.com>",
 	
 	"engines": {"node": ">= 0.8.x"},
