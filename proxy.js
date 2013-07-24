@@ -166,4 +166,8 @@ function loadingRules(){
 	console.log("");
 }
 
-commandio.addCommand('reload', 'Reload the proxy rules from the file', loadingRules);
+commandio.addCommand({
+	name: 'reload',
+	description: 'Reload the proxy rules from the file',
+	action: loadingRules
+});
