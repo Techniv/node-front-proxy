@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-var rules;
+var rules, oldRules;
 try{
 	require('colors');
 	var logger		= console,
@@ -56,7 +56,11 @@ console.log("");
 
 
 // Loading rules.
-loadingRules();
+try{
+	loadingRules();
+} catch (err){
+	terminated(err);
+}
 
 
 // Proxy method
@@ -141,23 +145,31 @@ console.log("Starting server on port"+config.listenPort+": "+"OK".green);
  * Load the proxy rules.
  */
 function loadingRules(){
+	oldRules = rules;
+
 	console.log("");
 
 	var rulesId, rulesPath = appPath+config.ruleFile;
-	rulesId = require.resolve(rulesPath);
 
-	if(require.cache[rulesId]) delete require.cache[rulesId];
 
 	try{
+		// Flush the cache if exist.
+		rulesId = require.resolve(rulesPath);
+		if(require.cache[rulesId]) delete require.cache[rulesId];
+		// Load new rules.
 		rules = require(rulesPath);
 	} catch (err){
 		console.error("Loading proxy rules:"+" FAIL".red);
 		console.error(err.stack.yellow);
-		process.exit(1);
+		throw err;
 	}
 	console.log("Loading proxy rules:"+" OK".green);
 
 
+	displayRules();
+}
+
+function displayRules(){
 	console.log("Applicable rules:".yellow);
 	for(var key in rules){
 		console.log(key.green+": "+util.inspect(rules[key]).yellow);
@@ -166,8 +178,29 @@ function loadingRules(){
 	console.log("");
 }
 
+function terminated(err){
+	console.log("");
+	console.log("=============================");
+	console.log(" NODE-FRONT-PROXY terminated ".red);
+	console.log("=============================");
+	console.log("");
+	process.exit(typeof err == 'undefined' ? 0 : 1);
+}
+
+// Command.IO
 commandio.addCommand({
 	name: 'reload',
 	description: 'Reload the proxy rules from the file',
-	action: loadingRules
+	action: loadingRules,
+	catchNativeError: function(err){
+		rules = oldRules;
+		console.log("\n=========================");
+		console.log("Error on reloading rules.".red);
+		console.log("Preview rules are restored.".red);
+		displayRules();
+	}
 });
+
+commandio.beforeExit(function(){
+	terminated();
+})
