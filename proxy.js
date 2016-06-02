@@ -107,7 +107,24 @@ var server = proxyLib.createServer(function(request, response, proxy){
 		);
 	}
 
-	proxy.proxyRequest(request, response, target);
+	try {
+		proxy.proxyRequest(request, response, target);
+	} catch (e){
+		console.error("Error".red+" on routing "
+			+requestHost+" to "
+			+(target.host+":"+target.port)
+		);
+		console.error(e.stack.red);
+		console.error(JSON.stringify(request, undefined, 2));
+
+		response.writeHead(502, {
+			"Status": "502 Bad Gateway",
+			"Content-Type": "text/plain"
+		});
+		response.write("Error 502 : Bad Gateway\n");
+		response.write("Error with routing plugin: "+ e.message +"\n");
+		response.end();
+	}
 });
 
 // WebSocket
