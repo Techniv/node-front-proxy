@@ -218,6 +218,12 @@ commandio.addCommand({
 	}
 });
 
+commandio.addCommand({
+	name: 'list',
+	description: 'Display the current proxy rules',
+	action: displayRules
+});
+
 commandio.beforeExit(function(){
 	terminated();
 })
