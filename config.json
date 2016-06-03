@@ -12,5 +12,12 @@
 		"action":		"get",
 		"number":		1,
 		"defaultValue":	80
+	},
+	"logPath":{
+		"key":			"logs",
+		"shortKey":		"l",
+		"action":		"get",
+		"number":		1,
+		"defaultValue":	"logs"
 	}
 }

@@ -2,6 +2,7 @@ node-front-proxy
 ================
 
 A simple frontal proxy for dispatching Web requests. HTTP &amp; WebSocket.
+*Work on node 0.12 and older*
 
 node-front-proxy is published under [GNU GPL 3.0 license](https://github.com/Techniv/node-front-proxy/blob/master/license/gpl-3.0.md).
 
@@ -11,13 +12,13 @@ Copy or rename the file `rules-template.js` to 'rules.js'. It contain all routes
 module.exports = {
 	// The default rules for unrecognized request.
 	'default': {
-		host: 127.0.0.1,
+		host: '127.0.0.1',
 		port: 81
 	},
 
 	// Other rules
 	'my.host.name':{
-		host: 192.168.1.20,
+		host: '192.168.1.20',
 		port: 8080
 	}
 };
@@ -49,3 +50,4 @@ You can also use some commands to control the proxy :
  * **help**: display the command list.
  * **quit**: stop and close the proxy.
  * **reload**: reload all the rules from the rule file.
+ * **list**: display the current proxy rules.

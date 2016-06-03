@@ -17,7 +17,7 @@
 var rules, oldRules;
 try{
 	require('colors');
-	var logger		= console,
+	var logger		= require('./libs/logger'),
 		util		= require('util'),
 		http		= require('http'),
 		path		= require('path'),
@@ -30,11 +30,11 @@ try{
 	process.exit(1);
 }
 
-console.log("");
-console.log("=========================");
-console.log("Starting NODE-FRONT-PROXY".green);
-console.log("=========================");
-console.log("");
+logger.log("");
+logger.log("=========================");
+logger.log("Starting NODE-FRONT-PROXY".green);
+logger.log("=========================");
+logger.log("");
 
 // Get application path.
 var appPath = path.dirname(process.mainModule.filename)+'/';
@@ -44,15 +44,15 @@ var appPath = path.dirname(process.mainModule.filename)+'/';
 try {
 	var config = cmdConf.getParameters();
 } catch(err){
-	console.error("Loading proxy config:"+" FAIL".red);
-	console.error(err.stack.yellow);
+	logger.error("Loading proxy config:"+" FAIL".red);
+	logger.error(err.stack.yellow);
 	process.exit(1);
 }
-console.log("Loading proxy config:"+" OK".green);
-console.log("Rule's file: "+config.ruleFile.yellow)
-console.log("Listen port: "+(""+config.listenPort).yellow)
-console.log("=========================");
-console.log("");
+logger.log("Loading proxy config:"+" OK".green);
+logger.log("Rule's file: "+config.ruleFile.yellow);
+logger.log("Listen port: "+(""+config.listenPort).yellow);
+logger.log("=========================");
+logger.log("");
 
 
 // Loading rules.
@@ -64,7 +64,7 @@ try{
 
 
 // Proxy method
-console.log("Creating proxy server");
+logger.log("Creating proxy server");
 var server = proxyLib.createServer(function(request, response, proxy){
 	var target;
 	var requestHost = request.headers.host;
@@ -107,7 +107,24 @@ var server = proxyLib.createServer(function(request, response, proxy){
 		);
 	}
 
-	proxy.proxyRequest(request, response, target);
+	try {
+		proxy.proxyRequest(request, response, target);
+	} catch (e){
+		logger.error("Error".red+" on routing "
+			+requestHost+" to "
+			+(target.host+":"+target.port)
+		);
+		logger.error(e.stack.red);
+		logger.error(JSON.stringify(request, undefined, 2));
+
+		response.writeHead(502, {
+			"Status": "502 Bad Gateway",
+			"Content-Type": "text/plain"
+		});
+		response.write("Error 502 : Bad Gateway\n");
+		response.write("Error with routing plugin: "+ e.message +"\n");
+		response.end();
+	}
 });
 
 // WebSocket
@@ -134,11 +151,11 @@ server.on('upgrade',function(request, socket, head){
 	
 	var proxy = new proxyLib.HttpProxy({target:target});
 	proxy.proxyWebSocketRequest(request, socket, head);
-})
+});
 
 // Launch server
 server.listen(config.listenPort);
-console.log("Starting server on port"+config.listenPort+": "+"OK".green);
+logger.log("Starting server on port"+config.listenPort+": "+"OK".green);
 
 
 /**
@@ -147,7 +164,7 @@ console.log("Starting server on port"+config.listenPort+": "+"OK".green);
 function loadingRules(){
 	oldRules = rules;
 
-	console.log("");
+	logger.log("");
 
 	var rulesId, rulesPath = appPath+config.ruleFile;
 
@@ -159,31 +176,31 @@ function loadingRules(){
 		// Load new rules.
 		rules = require(rulesPath);
 	} catch (err){
-		console.error("Loading proxy rules:"+" FAIL".red);
-		console.error(err.stack.yellow);
+		logger.error("Loading proxy rules:"+" FAIL".red);
+		logger.error(err.stack.yellow);
 		throw err;
 	}
-	console.log("Loading proxy rules:"+" OK".green);
+	logger.log("Loading proxy rules:"+" OK".green);
 
 
 	displayRules();
 }
 
 function displayRules(){
-	console.log("Applicable rules:".yellow);
+	logger.log("Applicable rules:".yellow);
 	for(var key in rules){
-		console.log(key.green+": "+util.inspect(rules[key]).yellow);
+		logger.log(key.green+": "+util.inspect(rules[key]).yellow);
 	}
-	console.log("=========================");
-	console.log("");
+	logger.log("=========================");
+	logger.log("");
 }
 
 function terminated(err){
-	console.log("");
-	console.log("=============================");
-	console.log(" NODE-FRONT-PROXY terminated ".red);
-	console.log("=============================");
-	console.log("");
+	logger.log("");
+	logger.log("=============================");
+	logger.log(" NODE-FRONT-PROXY terminated ".red);
+	logger.log("=============================");
+	logger.log("");
 	process.exit(typeof err == 'undefined' ? 0 : 1);
 }
 
@@ -194,13 +211,19 @@ commandio.addCommand({
 	action: loadingRules,
 	catchNativeError: function(err){
 		rules = oldRules;
-		console.log("\n=========================");
-		console.log("Error on reloading rules.".red);
-		console.log("Preview rules are restored.".red);
+		logger.error("\n=========================");
+		logger.error("Error on reloading rules.".red, err);
+		logger.error("Preview rules are restored.".red);
 		displayRules();
 	}
 });
 
+commandio.addCommand({
+	name: 'list',
+	description: 'Display the current proxy rules',
+	action: displayRules
+});
+
 commandio.beforeExit(function(){
 	terminated();
-})
+});
