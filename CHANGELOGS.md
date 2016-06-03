@@ -3,6 +3,7 @@
 ### 1.4.0 - *03/06/2016*:
  * Catch http-proxy exception.
  * Implement file logs for error.
+ * Add a "list" command to show the current rules.
 
 ### 1.3.1 - *20/05/2014*:
  * Fix dependencies version because they not retro-compatible.

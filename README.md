@@ -50,3 +50,4 @@ You can also use some commands to control the proxy :
  * **help**: display the command list.
  * **quit**: stop and close the proxy.
  * **reload**: reload all the rules from the rule file.
+ * **list**: display the current proxy rules.
