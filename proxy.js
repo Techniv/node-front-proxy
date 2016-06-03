@@ -49,8 +49,8 @@ try {
 	process.exit(1);
 }
 logger.log("Loading proxy config:"+" OK".green);
-logger.log("Rule's file: "+config.ruleFile.yellow)
-logger.log("Listen port: "+(""+config.listenPort).yellow)
+logger.log("Rule's file: "+config.ruleFile.yellow);
+logger.log("Listen port: "+(""+config.listenPort).yellow);
 logger.log("=========================");
 logger.log("");
 
@@ -151,7 +151,7 @@ server.on('upgrade',function(request, socket, head){
 	
 	var proxy = new proxyLib.HttpProxy({target:target});
 	proxy.proxyWebSocketRequest(request, socket, head);
-})
+});
 
 // Launch server
 server.listen(config.listenPort);
@@ -211,9 +211,9 @@ commandio.addCommand({
 	action: loadingRules,
 	catchNativeError: function(err){
 		rules = oldRules;
-		logger.log("\n=========================");
-		logger.log("Error on reloading rules.".red);
-		logger.log("Preview rules are restored.".red);
+		logger.error("\n=========================");
+		logger.error("Error on reloading rules.".red, err);
+		logger.error("Preview rules are restored.".red);
 		displayRules();
 	}
 });
@@ -226,4 +226,4 @@ commandio.addCommand({
 
 commandio.beforeExit(function(){
 	terminated();
-})
+});
