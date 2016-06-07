@@ -1,5 +1,8 @@
 # CHANGELOGS
 
+### 1.4.1 - *07/06/2016*:
+ * Fix error on error generation.
+
 ### 1.4.0 - *03/06/2016*:
  * Catch http-proxy exception.
  * Implement file logs for error.

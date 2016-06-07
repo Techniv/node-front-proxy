@@ -111,18 +111,18 @@ var server = proxyLib.createServer(function(request, response, proxy){
 		proxy.proxyRequest(request, response, target);
 	} catch (e){
 		logger.error("Error".red+" on routing "
-			+requestHost+" to "
-			+(target.host+":"+target.port)
+				+requestHost+" to "
+				+(target.host+":"+target.port),
+			e,
+			request
 		);
-		logger.error(e.stack.red);
-		logger.error(JSON.stringify(request, undefined, 2));
 
 		response.writeHead(502, {
 			"Status": "502 Bad Gateway",
 			"Content-Type": "text/plain"
 		});
 		response.write("Error 502 : Bad Gateway\n");
-		response.write("Error with routing plugin: "+ e.message +"\n");
+		response.write("Error with routing: "+ e.message +"\n");
 		response.end();
 	}
 });
