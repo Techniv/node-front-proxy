@@ -62,7 +62,7 @@ exports.warn = exports.log;
 exports.error = function error() {
     var date = dateFormater.format(new Date);
 
-    if(arg) write(date);
+    write(date);
     for(var i = 0; i < arguments.length; i++){
         var arg = arguments[i];
         if(typeof arg === 'string'){
