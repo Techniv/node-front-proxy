@@ -1,7 +1,10 @@
 # CHANGELOGS
 
-### 1.4.1 - *17/06/2016*:
+### 1.4.2 - *17/06/2016*:
  * Fix date logging on error log.
+
+### 1.4.1 - *08/06/2016*:
+ * Fix error on error generation.
  
 ### 1.4.0 - *03/06/2016*:
  * Catch http-proxy exception.
